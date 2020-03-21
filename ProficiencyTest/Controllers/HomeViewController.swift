@@ -32,8 +32,8 @@ class HomeViewController: UIViewController {
     
         view.backgroundColor = .white
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        layout.itemSize = CGSize(width: view.frame.width, height: 200)
+        //layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        //layout.itemSize = CGSize(width: view.frame.width / 2, height: 200)
         collectionInfoView = UICollectionView(frame: self.view.frame, collectionViewLayout: layout)
         collectionInfoView.delegate = self
         collectionInfoView.dataSource = self
@@ -51,13 +51,15 @@ class HomeViewController: UIViewController {
                 return
             }
             if let dt = data{
-                print("All Data:\(dt)")
+                DispatchQueue.main.async {
+                    self.navigationItem.title = dt.title ?? DefaultString.DefaultNavigationTitle
+                }
             }
         }
     }
 }
 
-extension HomeViewController:UICollectionViewDelegate, UICollectionViewDataSource{
+extension HomeViewController:UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return arrayInfoList.count
     }
@@ -66,6 +68,22 @@ extension HomeViewController:UICollectionViewDelegate, UICollectionViewDataSourc
         let cell = collectionInfoView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath)
         cell.backgroundColor = .blue
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        if UIDevice.current.userInterfaceIdiom == .pad{
+            return CGSize(width: (view.frame.width - 1) / 2, height: (view.frame.width - 1) / 2)
+        }else{
+            return CGSize(width: (view.frame.width - 1), height: (view.frame.width - 1))
+            
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat{
+        return 1
+    }
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat{
+        return 1
     }
 }
 

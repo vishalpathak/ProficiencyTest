@@ -9,3 +9,9 @@
 import Foundation
 
 let BaseUrlPath = "https://dl.dropboxusercontent.com/s/2iodh4vg0eortkl/facts.json"
+
+struct DefaultString{
+    static let DefaultNavigationTitle = "Info"
+    static let DefaultTitle = "Sorry! title not available"
+    static let DefaultDescription = "Sorry! description not available"
+}
