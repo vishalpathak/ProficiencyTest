@@ -1,0 +1,6 @@
+module Pods_ProficiencyTest {
+  umbrella header "Pods-ProficiencyTest-umbrella.h"
+
+  export *
+  module * { export * }
+}
