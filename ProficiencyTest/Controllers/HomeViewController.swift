@@ -17,7 +17,7 @@ class HomeViewController: UIViewController {
     var activity = UIActivityIndicatorView()
     
     //MARK:- Data Variables
-    var arrayInfoList = ["One", "Two", "Three", "Four"]
+    var arrayInfoList = [RowInfo]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,8 +51,10 @@ class HomeViewController: UIViewController {
                 return
             }
             if let dt = data{
+                self.arrayInfoList = dt.rows
                 DispatchQueue.main.async {
                     self.navigationItem.title = dt.title ?? DefaultString.DefaultNavigationTitle
+                    self.collectionInfoView.reloadData()
                 }
             }
         }
@@ -65,8 +67,10 @@ extension HomeViewController:UICollectionViewDelegate, UICollectionViewDataSourc
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionInfoView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath)
-        cell.backgroundColor = .blue
+        let cell = collectionInfoView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! InfoCollectionViewCell
+        cell.backgroundColor = .white
+        let rowObj = arrayInfoList[indexPath.row]
+        cell.setData(data: rowObj)
         return cell
     }
     
@@ -75,7 +79,6 @@ extension HomeViewController:UICollectionViewDelegate, UICollectionViewDataSourc
             return CGSize(width: (view.frame.width - 1) / 2, height: (view.frame.width - 1) / 2)
         }else{
             return CGSize(width: (view.frame.width - 1), height: (view.frame.width - 1))
-            
         }
     }
     
