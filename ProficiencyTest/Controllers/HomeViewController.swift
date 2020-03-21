@@ -22,6 +22,7 @@ class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpUIForViews()
+        fetchDataFromAPI()
     }
 
     //MARK:- Set UI for views
@@ -44,6 +45,15 @@ class HomeViewController: UIViewController {
     
     //MARK:- Fetch Data from API, assign to array, Populate View and assign To collection view cell
     @objc func fetchDataFromAPI() {
+        NetworkService.getDataFromAPI(BaseUrlPath) { (data: DataInfo?, error: Error?) in
+            if let err = error{
+                print("Error:\(err.localizedDescription)")
+                return
+            }
+            if let dt = data{
+                print("All Data:\(dt)")
+            }
+        }
     }
 }
 
@@ -56,6 +66,6 @@ extension HomeViewController:UICollectionViewDelegate, UICollectionViewDataSourc
         let cell = collectionInfoView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath)
         cell.backgroundColor = .blue
         return cell
-    }    
+    }
 }
 

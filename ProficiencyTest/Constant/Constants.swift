@@ -7,3 +7,5 @@
 //
 
 import Foundation
+
+let BaseUrlPath = "https://dl.dropboxusercontent.com/s/2iodh4vg0eortkl/facts.json"

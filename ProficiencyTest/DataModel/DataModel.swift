@@ -8,7 +8,7 @@
 
 import Foundation
 //Data Model for JSON Response
-struct DataInfo: Codable {
+struct DataInfo: Decodable {
     
     let title: String?
     let rows: [RowInfo]
@@ -19,7 +19,7 @@ struct DataInfo: Codable {
     }
 }
 
-struct RowInfo: Codable {
+struct RowInfo: Decodable {
     let title: String?
     let description: String?
     let imageHref: String?

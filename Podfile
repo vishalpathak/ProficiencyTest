@@ -6,6 +6,7 @@ target 'ProficiencyTest' do
   # use_frameworks!
 
   # Pods for ProficiencyTest
+  platform :ios, '10.0'
 
 pod 'Alamofire', '~> 5.0'
 pod 'SDWebImage', :modular_headers => true
