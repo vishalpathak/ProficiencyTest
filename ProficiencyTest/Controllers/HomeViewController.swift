@@ -62,21 +62,26 @@ class HomeViewController: UIViewController {
     
     //MARK:- Fetch Data from API, assign to array, Populate View and assign To collection view cell
     @objc func fetchDataFromAPI() {
-        NetworkService.getDataFromAPI(BaseUrlPath) { (data: DataInfo?, error: Error?) in
-            if let err = error{
-                print("Error:\(err.localizedDescription)")
-                return
-            }
-            if let dt = data{
-               //Map data Model Object to view model object
-                self.arrayInfoList = dt.rows.map({ (rowObj: RowInfo) -> DataInfoViewModel in
-                    return DataInfoViewModel(dataInfo: rowObj)
-                })
-                DispatchQueue.main.async {
-                    self.navigationItem.title = dt.title ?? DefaultString.DefaultNavigationTitle
-                    self.collectionInfoView.reloadData()
+        if ReachabilityCheck.isConnectedToNetwork(){
+            NetworkService.getDataFromAPI(BaseUrlPath) { (data: DataInfo?, error: Error?) in
+                if let err = error{
+                    print("Error:\(err.localizedDescription)")
+                    UIAlertHelper.presentAlertOnController(self, title: AlertMessages.AlertTitle, message: AlertMessages.CommonError)
+                    return
+                }
+                if let dt = data{
+                    //Map data Model Object to view model object
+                    self.arrayInfoList = dt.rows.map({ (rowObj: RowInfo) -> DataInfoViewModel in
+                        return DataInfoViewModel(dataInfo: rowObj)
+                    })
+                    DispatchQueue.main.async {
+                        self.navigationItem.title = dt.title ?? DefaultString.DefaultNavigationTitle
+                        self.collectionInfoView.reloadData()
+                    }
                 }
             }
+        }else{
+            UIAlertHelper.presentAlertOnController(self, title: AlertMessages.AlertTitle, message: AlertMessages.MessageInfo)
         }
     }
 }
@@ -96,7 +101,12 @@ extension HomeViewController:UICollectionViewDelegate, UICollectionViewDataSourc
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if UIDevice.current.userInterfaceIdiom == .pad{
-            return CGSize(width: (view.frame.width - 1) / 2, height: (view.frame.width - 1) / 2)
+            if UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight{
+                return CGSize(width: (collectionView.frame.size.width-10)/2, height: (collectionView.frame.size.height-10)/2)
+
+            }else{
+                return CGSize(width: (collectionView.frame.size.width-5)/2, height: (collectionView.frame.size.height-10)/3)
+            }
         }else{
             return CGSize(width: (view.frame.width - 1), height: (view.frame.width - 1))
         }
