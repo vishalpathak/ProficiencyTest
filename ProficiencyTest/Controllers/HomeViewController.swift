@@ -9,38 +9,55 @@
 import UIKit
 
 class HomeViewController: UIViewController {
-
-    //MARK:- UI Compenents
     
-    fileprivate var collectionInfoView: UICollectionView!
+    //MARK:- UI Compenents
+    lazy var flowLayout:UICollectionViewFlowLayout = {
+        let flow = UICollectionViewFlowLayout()
+        flow.scrollDirection = UICollectionView.ScrollDirection.vertical
+        return flow
+    }()
+    
     fileprivate let cellId = "cellId"
+    lazy var collectionInfoView: UICollectionView = {
+        let cv = UICollectionView(frame: CGRect.zero, collectionViewLayout: self.flowLayout)
+        cv.translatesAutoresizingMaskIntoConstraints = false
+        cv.setCollectionViewLayout(self.flowLayout, animated: true)
+        cv.dataSource = self
+        cv.delegate = self
+        cv.register(InfoCollectionViewCell.self, forCellWithReuseIdentifier: cellId)
+        cv.backgroundColor = .gray
+        return cv
+    }()
+    
     var activity = UIActivityIndicatorView()
     
     //MARK:- Data Variables
-    var arrayInfoList = [RowInfo]()
+    var arrayInfoList = [DataInfoViewModel]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpUIForViews()
         fetchDataFromAPI()
     }
-
+    
     //MARK:- Set UI for views
     func setUpUIForViews() -> Void {
         let refresh = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.refresh, target: self, action: #selector(fetchDataFromAPI))
         self.navigationItem.rightBarButtonItem  = refresh
-    
+        
         view.backgroundColor = .white
-        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-        //layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        //layout.itemSize = CGSize(width: view.frame.width / 2, height: 200)
-        collectionInfoView = UICollectionView(frame: self.view.frame, collectionViewLayout: layout)
-        collectionInfoView.delegate = self
-        collectionInfoView.dataSource = self
-        collectionInfoView.frame = view.frame
-        collectionInfoView.backgroundColor = .green
-        collectionInfoView.register(InfoCollectionViewCell.self, forCellWithReuseIdentifier: cellId)
-        view.addSubview(collectionInfoView)
+        self.view.addSubview(collectionInfoView)
+
+        let views = ["collection":self.collectionInfoView]
+
+        var constraints =  NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[collection]-0-|", options: NSLayoutConstraint.FormatOptions.alignAllTop, metrics: nil, views: views)
+        self.view.addConstraints(constraints)
+
+        //let stringConstraint = "V:|-\(slice)-[collection]-\(slice)-|"
+        let stringConstraint = "V:|-0-[collection]-0-|"
+
+        constraints =  NSLayoutConstraint.constraints(withVisualFormat: stringConstraint, options: NSLayoutConstraint.FormatOptions.alignAllCenterX, metrics: nil, views: views)
+        self.view.addConstraints(constraints)
     }
     
     //MARK:- Fetch Data from API, assign to array, Populate View and assign To collection view cell
@@ -51,7 +68,10 @@ class HomeViewController: UIViewController {
                 return
             }
             if let dt = data{
-                self.arrayInfoList = dt.rows
+               //Map data Model Object to view model object
+                self.arrayInfoList = dt.rows.map({ (rowObj: RowInfo) -> DataInfoViewModel in
+                    return DataInfoViewModel(dataInfo: rowObj)
+                })
                 DispatchQueue.main.async {
                     self.navigationItem.title = dt.title ?? DefaultString.DefaultNavigationTitle
                     self.collectionInfoView.reloadData()
@@ -69,8 +89,8 @@ extension HomeViewController:UICollectionViewDelegate, UICollectionViewDataSourc
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionInfoView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! InfoCollectionViewCell
         cell.backgroundColor = .white
-        let rowObj = arrayInfoList[indexPath.row]
-        cell.setData(data: rowObj)
+        let rowObj = arrayInfoList[indexPath.row] //Get ViewModel Object and send to table view cell
+        cell.dataInfoModel = rowObj
         return cell
     }
     

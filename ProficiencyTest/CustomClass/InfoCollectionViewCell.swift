@@ -33,6 +33,23 @@ class InfoCollectionViewCell: UICollectionViewCell {
         return img
     }()
     
+    //ViewModel Object set data to UI object using ViewModel
+    var dataInfoModel: DataInfoViewModel! {
+        didSet{
+            titleLable.text = dataInfoModel.title
+            descriptionLabel.text = dataInfoModel.description
+            let newUrl = URL(string: dataInfoModel.imageInfo)
+            self.infoImage!.sd_setImage(with: newUrl) { (image, error, cache, urls) in
+                if (error != nil) {
+                    // Failed to load image
+                    self.infoImage!.image = nil
+                } else {
+                    // Successful in loading image
+                    self.infoImage!.image = image
+                }
+            }
+        }
+    }
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -63,25 +80,4 @@ class InfoCollectionViewCell: UICollectionViewCell {
         ]
         NSLayoutConstraint.activate(constraints)
     }
-    
-    //MARK:- Set Data to TableView Cell
-    func setData(data: RowInfo){
-        titleLable.text = data.title ?? DefaultString.DefaultTitle
-        descriptionLabel.text = data.description ?? DefaultString.DefaultDescription
-        if let url = data.imageHref{
-            let newUrl = URL(string: url)
-            self.infoImage!.sd_setImage(with: newUrl) { (image, error, cache, urls) in
-                if (error != nil) {
-                    // Failed to load image
-                    self.infoImage!.image = nil
-                } else {
-                    // Successful in loading image
-                    self.infoImage!.image = image
-                }
-            }
-        }else{
-            self.infoImage!.image = nil
-        }
-    }
-    
 }
